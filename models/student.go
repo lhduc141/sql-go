@@ -45,6 +45,32 @@ func GetAllStudents() ([]Student, error) {
 	return students, nil
 }
 
+func GetStudentByName(name string) (*Student, error) {
+	var student Student
+	row := db.QueryRow("SELECT * FROM Student WHERE name = ?", name)
+	err := row.Scan(&student.StudentID, &student.Name, &student.Class, &student.BusID, &student.Avatar, &student.FeatureVector)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil // không tìm thấy học sinh
+		}
+		return nil, err
+	}
+	return &student, nil
+}
+
+func GetStudentByID(id int) (*Student, error) {
+	var student Student
+	row := db.QueryRow("SELECT * FROM Student WHERE student_id = ?", id)
+	err := row.Scan(&student.StudentID, &student.Name, &student.Class, &student.BusID, &student.Avatar, &student.FeatureVector)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil // không tìm thấy học sinh
+		}
+		return nil, err
+	}
+	return &student, nil
+}
+
 func CreateStudent(name, class string, busID int, avatar, featureVector string) error {
 	_, err := db.Exec("INSERT INTO Student (name, class, bus_id, avatar, feature_vector) VALUES (?, ?, ?, ?, ?)", name, class, busID, avatar, featureVector)
 	return err
